@@ -6,7 +6,6 @@ use Apitte\Core\Application\Application;
 use Apitte\Core\Application\IApplication;
 use Apitte\Core\Dispatcher\IDispatcher;
 use Apitte\Core\Dispatcher\JsonDispatcher;
-use Apitte\Core\Dispatcher\WrappedDispatcher;
 use Apitte\Core\ErrorHandler\IErrorHandler;
 use Apitte\Core\ErrorHandler\PsrLogErrorHandler;
 use Apitte\Core\ErrorHandler\SimpleErrorHandler;
@@ -36,8 +35,7 @@ class CoreServicesPlugin extends Plugin
 
 		$builder->addDefinition($this->prefix('dispatcher'))
 			->setFactory(JsonDispatcher::class)
-			->setType(IDispatcher::class)
-			->setAutowired(false);
+			->setType(IDispatcher::class);
 
 		// Catch exception only in debug mode if explicitly enabled
 		$catchException = !$globalConfig->debug || $globalConfig->catchException;
@@ -51,9 +49,6 @@ class CoreServicesPlugin extends Plugin
 		if ($builder->findByType(LoggerInterface::class) !== []) {
 			$errorHandler->setFactory(PsrLogErrorHandler::class);
 		}
-
-		$builder->addDefinition($this->prefix('dispatcher.wrapper'))
-			->setFactory(WrappedDispatcher::class, ['@' . $this->prefix('dispatcher')]);
 
 		$builder->addDefinition($this->prefix('application'))
 			->setType(IApplication::class)
